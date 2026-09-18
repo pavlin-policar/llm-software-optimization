@@ -17,13 +17,20 @@ time, under a timeout and a free-memory floor. Results are appended to a JSONL
 file as they finish; rerunning skips what is already there, so an interrupted
 run resumes.
 
+The data file, 10x_mouse_zheng.pkl.gz, can be downloaded from
+https://file.biolab.si/opentsne/benchmark/10x_mouse_zheng.pkl.gz
+
 Usage:
-    python benchmark_scaling.py run --original PATH --optimized PATH --data 10x_mouse_zheng.pkl.gz
-    python benchmark_scaling.py plot    # figure_scaling.png / .pdf
-    python benchmark_scaling.py tikz    # figures.tex, pgfplots
+    python run_tsne.py run --original PATH --optimized PATH --data 10x_mouse_zheng.pkl.gz
+    python run_tsne.py plot    # figure_scaling.png / .pdf
+    python run_tsne.py tikz    # figures.tex, pgfplots
 
 PATH is a source checkout of openTSNE built in place
-(`python setup.py build_ext --inplace`) with OpenMP enabled.
+(`python setup.py build_ext --inplace`) with OpenMP enabled. The original
+openTSNE is v1.0.4:
+
+    git clone --branch v1.0.4 --depth 1 https://github.com/pavlin-policar/openTSNE.git openTSNE-original
+
 Requires numpy, scipy, hnswlib and psutil; `plot` also needs matplotlib.
 """
 import argparse
@@ -176,6 +183,24 @@ def git_commit(path):
                           capture_output=True, text=True).stdout.strip() or None
 
 
+def openmp_linked(path):
+    """Whether the compiled _tsne extension in a checkout links an OpenMP runtime.
+
+    None when that cannot be told: no compiled extension, or no otool/ldd."""
+    import glob
+
+    libs = glob.glob(join(path, "openTSNE", "_tsne*.so")) + glob.glob(
+        join(path, "openTSNE", "_tsne*.pyd"))
+    if not libs:
+        return None
+    tool = ["otool", "-L"] if sys.platform == "darwin" else ["ldd"]
+    try:
+        out = subprocess.run(tool + [libs[0]], capture_output=True, text=True).stdout
+    except FileNotFoundError:
+        return None
+    return any(name in out for name in ("libomp", "libgomp", "libiomp"))
+
+
 def load_results(path):
     """Latest record per measurement; later lines supersede earlier ones."""
     results = {}
@@ -234,6 +259,14 @@ def cmd_run(args):
     for label, path in builds.items():
         if not exists(join(path, "openTSNE")):
             sys.exit(f"--{label}: {path} is not an openTSNE checkout")
+        linked = openmp_linked(path)
+        if linked is None:
+            log(f"warning: could not tell whether the {label} build in {path} uses OpenMP; "
+                f"is it built (python setup.py build_ext --inplace)?")
+        elif not linked:
+            log(f"warning: the {label} build in {path} is not linked against OpenMP, so it "
+                f"runs on one thread whatever --threads says; rebuild it with an OpenMP "
+                f"runtime available (on macOS, `brew install libomp`)")
     commits = {b: git_commit(p) for b, p in builds.items()}
     os.makedirs(args.log_dir, exist_ok=True)
     os.makedirs(dirname(abspath(args.out)), exist_ok=True)
@@ -453,7 +486,9 @@ def main():
     run = sub.add_parser("run", help="run the benchmark (resumes if interrupted)")
     run.add_argument("--original", required=True, help="built checkout of the original openTSNE")
     run.add_argument("--optimized", required=True, help="built checkout of the optimized openTSNE")
-    run.add_argument("--data", required=True, help="10x_mouse_zheng.pkl.gz")
+    run.add_argument("--data", required=True,
+                     help="10x_mouse_zheng.pkl.gz, downloadable from "
+                          "https://file.biolab.si/opentsne/benchmark/10x_mouse_zheng.pkl.gz")
     run.add_argument("--sizes", type=csv(int), default=SIZES)
     run.add_argument("--methods", type=csv(str), default=METHODS)
     run.add_argument("--threads", type=csv(int), default=THREADS,
