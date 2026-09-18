@@ -1,0 +1,126 @@
+
+<!-- METHOD PAGE MOLD, for asymptotic-session runs. Fill every {{…}} in place,
+     strip these comments, and link the page from the home page's sentence on
+     how each implementation's cost grows (href="#method"). In a performance-session
+     run, delete this file before the final build.
+
+     - This page is the evidence behind the home page's speedup-across-sizes
+       table, not a second headline. It holds everything a skeptic needs to
+       re-derive a fit, and nothing a user needs to read the result.
+     - Section order is fixed: the derivation that was tested, the ladder the
+       fits rest on, the fits, what was excluded and why, how to reproduce.
+     - Exponents are fitted on single-threaded times. Every exponent carries
+       its parameter, the parameters held fixed, the range, the point count,
+       and the residuals; an exponent over less than a decade of range is
+       labelled a slope estimate.
+     - Every number is traceable: cite the results file in an HTML comment at
+       the row. -->
+
+<article class="page" id="method">
+  <header class="masthead">
+    <div class="crumb">
+      <a href="#home">&larr; The report</a><span class="sep">/</span><span class="no">Method</span>
+    </div>
+    <h1>How the scaling was measured</h1>
+    <p class="standfirst">
+      {{Two or three sentences: which parameter each fit varies, over what
+      range, on how many points per curve, single-threaded, and the one-line
+      result — e.g. "roughly linear in n against roughly n^1.5 for the
+      baseline, reproduced at two settings of the fixed parameters".}}
+    </p>
+  </header>
+
+  <section>
+    <h2>What the derivation predicted</h2>
+    <p>{{The cost worked out on paper for the baseline and for the new
+    implementation, term by term, in the named parameter. Say which term
+    dominates at which sizes. Where a fit disagreed with the derivation, say
+    which of the two turned out wrong and how that was established.}}</p>
+  </section>
+
+  <section>
+    <h2>The ladder</h2>
+    <p>{{How the sizes were chosen: geometric spacing, span, what was held
+    fixed, and the largest size the baseline could still finish. The noise
+    floor is the spread between two runs of the same build at that size.}}</p>
+
+    <div class="scroll">
+      <table>
+        <caption>{{VARIED PARAMETER}}, one thread, {{FIXED PARAMETERS AND CONFIGURATION}}</caption>
+        <thead>
+          <tr>
+            <th class="num">{{PARAMETER, e.g. "n"}}</th>
+            <th class="num">{{BASELINE LABEL}}</th><th class="num">new</th>
+            <th class="num">Noise floor</th>
+            <th class="num">{{BASELINE LABEL}} peak</th><th class="num">new peak</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- {{results file, fields}} -->
+          <tr>
+            <td class="num">{{10 000}}</td>
+            <td class="num">{{1.9 s}}</td><td class="num">{{0.8 s}}</td>
+            <td class="num">{{±1.5%}}</td>
+            <td class="num">{{210 MB}}</td><td class="num">{{180 MB}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>The fits</h2>
+    <p>{{Least squares on log time against log size. One row per
+    implementation, parameter, and setting of the fixed parameters. The
+    uncertainty is the standard error of the slope; the residual is the
+    largest absolute log-residual, as a percentage of time.}}</p>
+
+    <div class="scroll">
+      <table>
+        <caption>Fitted exponents, one thread</caption>
+        <thead>
+          <tr>
+            <th>Implementation</th><th>Parameter</th><th>Held fixed</th>
+            <th class="num">Range</th><th class="num">Points</th>
+            <th class="num">Exponent</th><th class="num">Max residual</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- {{results file, fit script}} -->
+          <tr>
+            <td>{{new}}</td><td>{{n}}</td><td>{{mean degree 15}}</td>
+            <td class="num">{{10k–1M}}</td><td class="num">{{6}}</td>
+            <td class="num">{{1.03 ± 0.02}}</td><td class="num">{{4%}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <p>{{What the fits establish in words: which changes moved the exponent
+      and which only lowered the constant, and whether each exponent
+      reproduced at the second setting of the fixed parameters.}}</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What was excluded</h2>
+    <div class="note warm">
+      <p>{{Every point left out of a fit and why: pre-asymptotic sizes,
+      points inside their own noise floor, regime changes (out of cache, out
+      of memory, a different code path) that split a curve in two. Write
+      "none" only when true.}}</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Reproducing the fits</h2>
+    <p>{{The harness invocation that produced the ladder, the results files,
+    and the command that recomputes every fit above from them.}}</p>
+    <pre><code>{{COMMANDS}}</code></pre>
+  </section>
+
+  <div class="pager">
+    <a href="#home"><span class="dir">Back to</span><span>The report</span></a>
+  </div>
+</article>

@@ -1,0 +1,76 @@
+  <div class="foot">
+    {{REPORT TITLE}} &mdash; branch <b>{{BRANCH}}</b> against {{BASELINE LABEL}} {{BASELINE SHA}}.<br>
+    Full log in <code>{{DECISION LOG PATH}}</code>; harness in <code>{{HARNESS PATH}}</code>.<br>
+    {{TIMING METHOD LINE, e.g. "Timings are best-of-N wall clock on an idle MACHINE; run-to-run variance is about X%."}}
+  </div>
+</div>
+
+<script>
+(function () {
+  var pages = Array.prototype.slice.call(document.querySelectorAll(".page"));
+
+  // Diff colouring. The source is plain text so that Cython, which is full of
+  // angle brackets, needs no hand-escaping; the classes go on here. There are
+  // some seven thousand diff lines across the change pages, so a page is
+  // coloured the first time it is opened rather than all of them at load.
+  function colourise(root) {
+    if (root.getAttribute("data-lit")) return;
+    root.setAttribute("data-lit", "1");
+    root.querySelectorAll("pre.diff").forEach(function (pre) {
+      var out = document.createDocumentFragment();
+      pre.textContent.split("\n").forEach(function (line) {
+        var el = document.createElement("i");
+        var c = line.charAt(0);
+        if (c === "+") el.className = "a";
+        else if (c === "-") el.className = "d";
+        else if (c === "@") el.className = "h";
+        el.textContent = line === "" ? " " : line;
+        out.appendChild(el);
+      });
+      pre.textContent = "";
+      pre.appendChild(out);
+    });
+  }
+
+  function show(want) {
+    var target = document.getElementById(want);
+    if (!target || target.className.indexOf("page") === -1) {
+      want = "home";
+      target = document.getElementById("home");
+    }
+    colourise(target);
+    pages.forEach(function (p) {
+      p.classList.toggle("on", p === target);
+    });
+    document.title = (want === "home" ? "" : target.dataset.title + " — ")
+      + "{{REPORT TITLE}}";
+    window.scrollTo(0, 0);
+  }
+
+  function fromHash() {
+    show((location.hash || "#home").slice(1));
+  }
+
+  // Navigate on the click as well as on the hash, because a sandboxed frame
+  // may not give the document a hash of its own to listen for.
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!a) return;
+    var want = a.getAttribute("href").slice(1);
+    if (!document.getElementById(want)) return;
+    e.preventDefault();
+    try {
+      history.pushState({ page: want }, "", "#" + want);
+    } catch (err) {
+      /* opaque origin: the view still changes, the URL just does not */
+    }
+    show(want);
+  });
+
+  window.addEventListener("hashchange", fromHash);
+  window.addEventListener("popstate", fromHash);
+  fromHash();
+})();
+</script>
+
+</body></html>

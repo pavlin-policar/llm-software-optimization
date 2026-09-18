@@ -1,0 +1,296 @@
+<!-- HOME PAGE MOLD. This file defines the report's face: fill every {{…}},
+     delete these comments, and do not invent new components — the vocabulary
+     below is the whole vocabulary. Conventions that are part of the look:
+
+     - Numbers live in mono cells (td.num), prose in td.desc. A speedup is
+       td.gain (accent), a flat/negative result td.flat.
+     - Every speedup table carries an empty th/td pair for a bar in its last
+       column. Bar widths share one absolute scale, stated in the section's
+       intro (the reference report uses 1× = empty, 5× = full).
+     - Captions name the workload and configuration the table measured:
+       "250 000 points, complete optimization", not "Results".
+     - A ranking (ol.rank) normalizes its bars to the top row and puts the
+       thing measured under the title in <em>. li.note rows carry no number.
+     - .note is a finding; .note.warm and .card.warm mark caveats, costs, and
+       results that cut against the story. They are mandatory when such exist.
+     - Every number is traceable: cite the results file in an HTML comment at
+       the row, or the harness/script in the surrounding prose. -->
+
+<article class="page on" id="home" data-lit="1">
+  <header class="masthead">
+    <div class="eyebrow">
+      <span>{{PROJECT}}</span>
+      <span>{{SCOPE, e.g. "Gradient approximation"}}</span>
+      <span>{{CHANGE BOUNDARY, e.g. "Cython and build only"}}</span>
+    </div>
+    <h1>{{THE CLAIM: what got faster, subject to what invariant}}</h1>
+    <p class="standfirst">
+      {{First paragraph of the report. Lead with the headline multiplier(s) in
+      bold: the end-to-end workload's before/after, on the largest measured
+      size, best-of-N, and single- and multi-threaded stated separately rather
+      than merged. Then the honest qualifiers: accuracy unchanged (or better,
+      where), memory direction, and where the margin widens or narrows.}}
+    </p>
+    <div class="meta">
+      <b>Branch</b> {{BRANCH}} &nbsp;·&nbsp; <b>Against</b> {{BASELINE LABEL}} @ {{BASELINE SHA}}<br>
+      <b>Machine</b> {{CPU, CORES}} &nbsp;·&nbsp; <b>Toolchain</b> {{COMPILER/INTERPRETER AND VERSIONS}}<br>
+      <b>Data</b> {{DATASETS AND SIZES}} &nbsp;·&nbsp; <b>Schedule</b> {{WORKLOAD PARAMETERS}}
+    </div>
+  </header>
+
+  <!-- LADDER TABLES, asymptotic-session runs only; a performance-session run deletes
+       this section. They are the headline: one row per size of the ladder,
+       absolute times on both sides, so the speedup column shows the growth.
+       One table single-threaded; once the target has a parallel mode, a second
+       at the performance-core count. Bars share one scale across both tables.
+       The crossover and the sentence on how each implementation's cost grows
+       follow in a .note linking to #method. -->
+
+  <section>
+    <h2>{{How the speedup grows with size}}</h2>
+
+    <p>{{The varied parameter, what was held fixed, rep count, and the bar
+    scale. One sentence on the trend in wall time, not in exponents.}}</p>
+
+    <div class="scroll">
+      <table>
+        <caption>{{VARIED PARAMETER}}, one thread, {{FIXED PARAMETERS AND CONFIGURATION}}</caption>
+        <thead>
+          <tr>
+            <th class="num">{{PARAMETER, e.g. "n"}}</th>
+            <th class="num">{{BASELINE LABEL}}, 1 thread</th><th class="num">new, 1 thread</th>
+            <th class="num">Speedup</th><th></th>
+            <th class="num">{{BASELINE LABEL}} peak</th><th class="num">new peak</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- {{results file, fields}} -->
+          <tr>
+            <td class="num">{{100 000}}</td>
+            <td class="num">{{48.2 s}}</td><td class="num">{{9.6 s}}</td>
+            <td class="gain">{{5.02×}}</td><td class="bar"><span style="width:{{50}}%"></span></td>
+            <td class="num">{{1.9 GB}}</td><td class="num">{{0.7 GB}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <caption>{{VARIED PARAMETER}}, new on {{N}} performance cores, {{FIXED PARAMETERS AND CONFIGURATION}}</caption>
+        <thead>
+          <tr>
+            <th class="num">{{PARAMETER}}</th>
+            <th class="num">{{BASELINE LABEL}}, as shipped</th><th class="num">new, {{N}} threads</th>
+            <th class="num">Speedup</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num">{{100 000}}</td>
+            <td class="num">{{48.2 s}}</td><td class="num">{{2.1 s}}</td>
+            <td class="gain">{{23.0×}}</td><td class="bar"><span style="width:{{100}}%"></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <h3>{{THE CROSSOVER AS A SENTENCE, e.g. "Faster from 20 000 points up"}}</h3>
+      <p>{{How each implementation's cost grows, one sentence each, e.g.
+      "roughly linear in n, against roughly n^1.5 for the baseline"; the
+      evidence is on the <a href="#method">method page</a>.}}</p>
+    </div>
+  </section>
+
+  <!-- SINGLE- AND MULTI-THREADED RESULTS GET THEIR OWN TABLES AND THEIR OWN
+       HEADINGS. Never add a "threads" column to one table to carry both: it
+       hides the regressions the single-threaded number exists to catch, and
+       "code only" / "total" column labels mean nothing to a reader. If the
+       target has no parallel mode, delete the second section. -->
+
+  <section>
+    <h2>{{Single-threaded: what the code changes are worth}}</h2>
+
+    <p>{{Both binaries held to one thread, so nothing here comes from extra
+    cores. Name the workload, configuration, rep count, and the bar scale
+    ("bars scaled to the best row").}}</p>
+
+    <div class="scroll">
+      <table>
+        <caption>{{WORKLOAD SIZE}}, one thread, {{CONFIGURATION}}</caption>
+        <thead>
+          <tr>
+            <th>{{COMPONENT, e.g. "Dataset"}}</th>
+            <th class="num">{{BASELINE LABEL}}, 1 thread</th><th class="num">branch, 1 thread</th>
+            <th class="num">Speedup</th><th></th>
+            <th class="num">{{BASELINE LABEL}} peak</th><th class="num">branch peak</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- One row per measured path. Numbers from results files; cite the
+               file in a comment on the row. -->
+          <!-- {{results/final_interp.json, best_s}} -->
+          <tr>
+            <td>{{PATH, e.g. "interpolation (numpy)"}}</td>
+            <td class="num">{{94.5 s}}</td><td class="num">{{38.9 s}}</td>
+            <td class="gain">{{2.43×}}</td><td class="bar"><span style="width:{{66}}%"></span></td>
+            <td class="num">{{1062–1141 MB}}</td><td class="num">{{1087–1127 MB}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>{{Multi-threaded: what a user gets}}</h2>
+
+    <p>{{Baseline as it actually ships against the branch at the
+    performance-core count. State that count and that no efficiency cores were
+    used; a run spanning both core types is not a scaling measurement.}}</p>
+
+    <div class="scroll">
+      <table>
+        <caption>{{WORKLOAD SIZE}}, branch on {{N}} performance cores</caption>
+        <thead>
+          <tr>
+            <th>{{COMPONENT}}</th>
+            <th class="num">{{BASELINE LABEL}}, as shipped</th><th class="num">branch, {{N}} threads</th>
+            <th class="num">Speedup</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{PATH}}</td>
+            <td class="num">{{94.5 s}}</td><td class="num">{{14.7 s}}</td>
+            <td class="gain">{{6.42×}}</td><td class="bar"><span style="width:{{100}}%"></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Then a scaling table: one column per thread count up to the
+         performance-core count, plus scaling and parallel efficiency. -->
+
+    <!-- One div.scroll>table per workload size; then a compact cross-size
+         table if the margin moves with size:
+         <caption>Speedup over {{BASELINE LABEL}} by dataset size</caption>, one
+         row per size with both absolute times and the gain, no bars. -->
+
+    <div class="note">
+      <h3>{{THE FINDING AS A SENTENCE, e.g. "The descent is no longer most of a run"}}</h3>
+      <p>{{What the tables above forced you to conclude. Findings, not summaries.}}</p>
+    </div>
+
+    <div class="note warm">
+      <h3>{{A CAVEAT AS A SENTENCE: what did not improve, or cannot be claimed}}</h3>
+      <p>{{e.g. a configuration that could not be measured before this branch,
+      or a column that only exists on the new build.}}</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Every change, and what it cost to make</h2>
+
+    <!-- The tbody is generated by build.py from every change page's data-
+         attributes, so it is never out of step with the pages that exist. -->
+
+    <p>{{One row per change page, in page order. Gain is this change's measured
+    effect on its own target. Complexity is how hard it is to misunderstand.
+    Churn is git's +/−.}}</p>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th></th><th>Change</th><th class="num">Gain</th><th></th>
+            <th>Complexity</th><th class="num">Churn</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!--INDEX-->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cols">
+      <!-- Cards for the changes that deserve a pulled quote: best return,
+           most subtle, most expensive to make. .card.warm = cost, not glory. -->
+      <div class="card">
+        <span class="label">{{WHY PULLED, e.g. "Best return of all"}}</span>
+        <h3>{{NN}} — {{TITLE}}</h3>
+        <p>{{The one-paragraph story.}}</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The same list, ranked by what each change was worth</h2>
+
+    <p>{{Bars normalized to the top row. Changes with no number worth plotting
+    become li.note rows at the foot. Regressions and costs go .warm.}}</p>
+
+    <ol class="rank">
+      <li><span class="rk">1</span><span class="rl"><b>{{NN}}</b><a class="plain" href="#c{{N}}">{{Title}}</a><em>{{WHAT IT WAS MEASURED ON}}</em></span><span class="rb"><i style="width:100%"></i></span><span class="rg">{{8.0×}}</span></li>
+      <li class="note"><span class="rk">—</span><span class="rl"><b>{{NN}}</b><a class="plain" href="#c{{N}}">{{Title}}</a></span><span class="rg">{{what it did instead, e.g. "enables 14 and 27"}}</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Memory</h2>
+    <!-- Allocation and resident memory measured separately and honestly:
+         traced allocation (churn) vs peak RSS. Plain caption'd tables,
+         bar-less unless a scale helps. Explain retained memory and peak live
+         working set; .note.warm any row whose diff does not explain it. -->
+    {{MEMORY TABLES AND FINDINGS}}
+  </section>
+
+  <section>
+    <h2>{{CORRECTNESS HEADLINE AS A CLAIM, e.g. "The approximation did not get worse"}}</h2>
+    <!-- Evidence, not assurance: comparison against the exact/brute-force
+         reference on the real data sizes, with the error norm named in the
+         caption. -->
+    {{CORRECTNESS TABLES AND NOTES}}
+  </section>
+
+  <section>
+    <h2>Tried and rejected</h2>
+
+    <p>{{Rejected ideas are results: each kept the measurements that killed it.}}</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Idea</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="desc"><b>{{IDEA, sentence form}}</b><br>
+              {{The mechanism as proposed.}}</td>
+            <td class="desc">{{VERDICT WITH NUMBERS, e.g. "Correct — agrees to
+            4.4e-15 — but <b>2.2–3.5× slower</b>, because …"}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Method, and what it turned on</h2>
+    <!-- The measurement contract: best-of-N (state N), strict seriality,
+         module-median vs best choice, the noise floor number and how it was
+         established, machine idleness. .note per decision that changed the
+         work — e.g. "Run-to-run variance is 7%, the same size as most of
+         these effects". -->
+    <div class="note">
+      <h3>{{METHOD FINDING AS A SENTENCE}}</h3>
+      <p>{{detail}}</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Every change in detail</h2>
+    <div class="toc">
+      <!-- One entry per change page, id matching its article. -->
+      <a href="#c1"><i>01</i><span>{{Title of change 1}}</span></a>
+    </div>
+  </section>
+</article>

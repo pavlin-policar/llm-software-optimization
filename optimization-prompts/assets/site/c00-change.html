@@ -1,0 +1,108 @@
+<!-- CHANGE PAGE MOLD. Copy to cNN.html per change (c01.html, c02.html, …),
+     fill every {{…}}, and delete this mold before the final build. The
+     section order is the report's grammar: idea, discovery, mechanism, the
+     code, the payoff. Do not rename the h2s.
+
+     - The standfirst is the hook: the concrete cost that made this change
+       worth making, with numbers, before the idea is even stated.
+     - The factbar reports the change's own measured effect on its own target
+       (not the end-to-end movement), under every thread count it was measured
+       at. Each slot names its condition: a bare "Gain" leaves the reader
+       guessing which configuration produced it. Where the target has no
+       parallel mode, delete the multi-threaded slot rather than leaving it
+       blank. Standalone is the change applied alone to the untouched baseline;
+       when it cannot be lifted out of the chain, say which earlier change it
+       needs — this page is where that belongs, not the home ranking.
+     - Churn comes from git show --stat. Commit is the short SHA — the same
+       SHA notes/cNN.txt and the .meta block live or die by.
+     - The CODE marker expands to the complete verbatim diff; every hunk
+       needs a note in notes/cNN.txt or the build fails.
+     - The data- attributes feed the home index and the pager. Fill them all;
+       a missing one is a build problem. data-summary is the one-sentence
+       mechanism the home table shows next to the title.
+     - COUNT and NEXT are filled by the builder from the pages that exist, so
+       this page is complete the moment it is written. Never hand-number
+       them. -->
+
+<article class="page" id="c{{N}}"
+         data-title="{{TITLE, short form}}"
+         data-gain="{{4.62×}}"
+         data-gain-1t="{{1.31×}}"
+         data-cx="{{Low|Med|High}}"
+         data-churn="{{+52 −4}}"
+         data-summary="{{One sentence: the mechanism, plain enough that the home table alone teaches the branch.}}">
+  <header class="masthead">
+    <div class="crumb">
+      <a href="#home">&larr; All changes</a><span class="sep">/</span><span class="no"><!--COUNT--></span>
+    </div>
+    <h1>{{TITLE, noun phrase — the change, not its effect}}</h1>
+    <p class="standfirst">
+      {{What was expensive and how expensive, concretely: per-call cost at a
+      stated size, against what it should have cost. Two or three sentences.}}
+    </p>
+    <div class="factbar">
+      <div class="fact"><span class="k">Gain, {{N}} threads</span><span class="v big">{{4.62×}}</span></div>
+      <div class="fact"><span class="k">Gain, 1 thread</span><span class="v">{{1.31×}}</span></div>
+      <div class="fact"><span class="k">Alone on the baseline</span><span class="v">{{1.28×, or "not separable — needs #11"}}</span></div>
+      <div class="fact"><span class="k">Measured on</span><span class="v">{{TARGET AND SIZE, e.g. "Positive gradient, 44 808 points"}}</span></div>
+      <div class="fact"><span class="k">Complexity</span><span class="v"><span class="cx cx-low">{{Low|Med|High}}</span></span></div>
+      <div class="fact"><span class="k">Churn</span><span class="v mono">{{+52 −4, 1 file}}</span></div>
+      <div class="fact"><span class="k">Commit</span><span class="v mono">{{SHORT SHA}}</span></div>
+    </div>
+  </header>
+
+  <section>
+    <h2>The idea</h2>
+    <p>{{The change itself, plainly: what is now done instead of what was done.
+    Assume a reader who knows the codebase but not this branch.}}</p>
+  </section>
+
+  <section>
+    <h2>How it was found</h2>
+    <p>{{The evidence that pointed here: profile line, allocation trace, a
+    surprising number from a probe. Discovery is part of the audit trail;
+    "profiled and this was hot" is fine when true, but name the profile.}}</p>
+  </section>
+
+  <section>
+    <h2>In detail</h2>
+    <p>{{The mechanism: why the old code was slow at the level of caches,
+    allocations, or asymptotics, and why the new code is not. This is where a
+    skeptic is convinced. Small tables or pre blocks for micro-numbers are
+    fine.}}</p>
+  </section>
+
+  <!--CODE:N-->
+
+  <section>
+    <h2>What it bought, and why</h2>
+    <p>{{Before/after on the change's own target, then the effect visible
+    end-to-end (or an honest "none yet — it enables NN".) Bars in these tables
+    re-use the home scale.}}</p>
+
+    <div class="scroll">
+      <table>
+        <caption>{{CONFIGURATION THE GAIN WAS MEASURED ON}}</caption>
+        <thead>
+          <tr><th>{{Component}}</th><th class="num">{{baseline}}</th><th class="num">after</th><th class="num">Speedup</th><th></th></tr>
+        </thead>
+        <tbody>
+          <!-- {{results file, field}} -->
+          <tr>
+            <td>{{target}}</td><td class="num">{{31.2 ms}}</td><td class="num">{{6.8 ms}}</td>
+            <td class="gain">{{4.62×}}</td><td class="bar"><span style="width:{{92}}%"></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>{{Why this number follows from the mechanism — or, if the diff cannot
+    explain the measurement, an explicit "unexplained" label and what was
+    ruled out. Never assign a plausible cause you cannot show.}}</p>
+  </section>
+
+  <div class="pager">
+    <a href="#home"><span class="dir">Back to</span><span>The report</span></a>
+    <!--NEXT-->
+  </div>
+</article>
