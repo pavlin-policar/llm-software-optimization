@@ -36,3 +36,36 @@ Both are built in place with OpenMP:
 ```bash
 python benchmark-scripts/run_tsne.py run --original openTSNE-original --optimized openTSNE --data 10x_mouse_zheng.pkl.gz
 ```
+
+## graphlets
+
+The source code for graphlet counting methods is written in C++ and can be compiled with the GNU C++ compiler. We've performed all experiments with the `-O2` compiler optimization level enabled.
+
+```bash
+g++ -O2 -o bruteforce.exe bruteforce.cpp
+g++ -O2 -o orca.exe orca.cpp
+g++ -O2 -o optimized.exe optimized.cpp
+```
+
+The benchmark data is available in the `data` subfolder. It includes random graphs along with a [human PPI network](https://snap.stanford.edu/biodata/datasets/10000/10000-PP-Pathways.html) from the [BioSNAP repository](https://snap.stanford.edu/biodata/index.html). The nodes in the original file have been relabeled to sequential integers and stored as `human.in`.
+
+Brute-force implementation comes from the GraphCrunch package. `bruteforce` and `optimized` implementations produce several output files. The `.ndump2` contains the most detailed counting results (all orbit counts for each graph node). This is also the only output produced by `orca`.
+
+```bash
+bruteforce.exe graph.in graphlets-bf
+optimized.exe graph.in graphlets-opt
+orca.exe node 5 graph.in graphlets-orca.ndump2
+```
+
+We can validate that they all match.
+
+```bash
+cmp graphets-bf.ndump2 graphlets-orca.ndump2
+cmp graphets-bf.ndump2 graphlets-opt.ndump2
+```
+
+To run the benchmarks of all three methods use
+
+```bash
+python benchmark-scripts/run_graphlets.py
+```
