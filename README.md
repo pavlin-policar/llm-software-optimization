@@ -64,8 +64,15 @@ cmp graphets-bf.ndump2 graphlets-orca.ndump2
 cmp graphets-bf.ndump2 graphlets-opt.ndump2
 ```
 
-To run the benchmarks of all three methods use
+To run the benchmarks of all three methods on all datasets use
 
 ```bash
-python benchmark-scripts/run_graphlets.py
+python benchmark-scripts/run_graphlets.py compile
+python benchmark-scripts/run_graphlets.py run
+```
+
+Alternatively, you can run a subset of methods on a subset of datasets.
+
+```bash
+python benchmark-scripts/run_graphlets.py run --graphs graph_10k_40k --executables orca optimized
 ```
