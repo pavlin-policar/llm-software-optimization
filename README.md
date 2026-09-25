@@ -76,3 +76,26 @@ Alternatively, you can run a subset of methods on a subset of datasets.
 ```bash
 python benchmark-scripts/run_graphlets.py run --graphs graph_10k_40k --executables orca optimized
 ```
+
+## ssGSEA
+
+`ssgsea/` holds four implementations. Each file exposes `score(expression, gene_sets)`, with `expression` arranged genes by samples.
+
+- `naive.py` is the cumulative-sum oracle. The timed path uses rank weights and a stable argsort.
+- `gsva.py` is GSVA's `.fastRndWalk` closed form, not a call into R. It keeps fractional average ranks and the same tie order as `naive.py`. The benchmark runs it with normalization off.
+- `gseapy.py` calls GSEApy (`sample_norm_method="rank"`, raw enrichment score). If `gseapy` is not installed, that implementation is recorded as unsupported and the others still run.
+- `ai_optimized.py` is the AI optimized ssGSEA kernel. The benchmark calls it `ai-optimized`.
+
+The expression matrix and the gene sets are not in this repository. `ssgsea/data/download_script.py` downloads TCGA-BRCA STAR TPM from UCSC Xena and the MSigDB C5 GO Biological Process JSON, maps Ensembl IDs to gene symbols, and writes the two aligned files. See `ssgsea/data/README.md`.
+
+Pass that table as `--data` and the JSON as `--genesets`. The runner uses the first 1000 sample columns. It keeps gene sets whose overlap with the expression symbols is between 15 and 500 inclusive, sorts those names, and times prefixes of that list: 10, 25, 50, 100, 250, 500, 1000, 2000, and 3000 gene sets. A newer MSigDB release can change which names fall in a prefix.
+
+Requires `numpy`, `scipy`, `pandas`, and `gseapy`. `plot` also needs `matplotlib`.
+
+Each cell runs in a fresh process with one thread. The recorded time is the scoring call, not file loading. A run stops an implementation after 1200 seconds and skips its larger gene-set counts. Results are appended to a JSONL file, and a rerun skips cells that already succeeded. The four implementations return the same raw scores.
+
+```bash
+python benchmark-scripts/run_ssgsea.py run --data ssgsea/data/tcga-brca.star_tpm.tsv --genesets ssgsea/data/c5.go.bp.v2026.1.Hs.json
+python benchmark-scripts/run_ssgsea.py run --data ssgsea/data/tcga-brca.star_tpm.tsv --genesets ssgsea/data/c5.go.bp.v2026.1.Hs.json --implementations naive ai-optimized --gene-sets 10,25,50
+python benchmark-scripts/run_ssgsea.py plot
+```
