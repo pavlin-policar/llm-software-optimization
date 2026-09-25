@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.DS_Store
+.idea/
+
+# Compiled extensions and graphlet binaries
+*.so
+*.exe
+
+# Downloaded benchmark inputs
+*.pkl.gz
+ssgsea/data/*.tsv
+ssgsea/data/*.json
+
+# Benchmark caches, child-process logs, and a local original openTSNE checkout
+benchmark-scripts/tmp/
+benchmark-scripts/logs/
+openTSNE-original/
+
+# Figures and cache
+benchmark-scripts/*.png
+benchmark-scripts/*.pdf
+benchmark-scripts/figures.tex
+*.jsonl
