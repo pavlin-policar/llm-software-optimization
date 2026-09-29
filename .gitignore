@@ -26,4 +26,5 @@ benchmark-scripts/figures.tex
 *.jsonl
 
 # Generated figures (benchmark-scripts/plot_benchmarks.py)
-figures/
+figures/*
+!figures/benchmarks.png
