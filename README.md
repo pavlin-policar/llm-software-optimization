@@ -1,5 +1,9 @@
 # Companion repository to "Is manual software optimization a thing of the past?"
 
+![Benchmark results across openTSNE, ssGSEA, and graphlet counting](figures/benchmarks.png)
+
+This paper asks whether an LLM-based coding agent, given only an optimization objective and correctness requirements, can autonomously find substantial performance improvements in scientific software. Across t-SNE, ssGSEA, and graphlet counting, it spans low-level tuning, mathematical reformulation, and algorithmic improvements.
+
 ## Optimization prompts
 
 `optimization-prompts/` holds two distilled prompts from the optimization sessions reported in the paper, together with the tooling that builds their HTML reports. The sessions themselves were not run from these prompts; the prompts collect their lessons so that a new session can start from them.
