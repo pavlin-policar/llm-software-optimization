@@ -1,4 +1,4 @@
-# Companion repository to "TBA"
+# Companion repository to "Is manual software optimization a thing of the past?"
 
 ## Optimization prompts
 
