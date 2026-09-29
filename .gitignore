@@ -24,3 +24,6 @@ benchmark-scripts/*.png
 benchmark-scripts/*.pdf
 benchmark-scripts/figures.tex
 *.jsonl
+
+# Generated figures (benchmark-scripts/plot_benchmarks.py)
+figures/
